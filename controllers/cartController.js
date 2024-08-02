@@ -50,7 +50,6 @@ const getCart = async (req, res) => {
         }
         let cartArray = [];
         let total =0;
-        let totalArray={};
         for (let i = 0; i < userFound.products.length; i++) {
             const cart = userFound.products[i];
             const productDetail = await Product.findOne({ id: cart.product_id });
@@ -65,8 +64,8 @@ const getCart = async (req, res) => {
                 })
               total+=subTotal;
             }
-         totalArray ={cartArray,total};
         }
+       let totalArray ={cartArray,total};
         return res.status(200).json(totalArray);
     } catch (err) {
         console.log(err);

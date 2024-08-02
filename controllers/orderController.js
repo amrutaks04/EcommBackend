@@ -1,6 +1,7 @@
 const Order = require('../models/orderModel');
 const Cart = require('../models/cartModel')
 const Product = require('../models/productModel');
+const { v4: uuidv4 } = require('uuid');
 
 const placeOrder = async (req, res) => {
     try {
@@ -24,6 +25,7 @@ const placeOrder = async (req, res) => {
         }
 
         const product = await Order.create({
+            order_id: uuidv4(),
             user_id: userid,
             custName: req.body.custName,
             custPhno: req.body.custPhno,
@@ -39,4 +41,45 @@ const placeOrder = async (req, res) => {
         console.log(err);
     }
 }
-module.exports = { placeOrder };
+
+const viewOrder = async (req, res) => {
+    try {
+        const userid = req.user;
+        const orderPresent = await Order.find({ user_id: userid });
+        console.log(orderPresent);
+        if (!orderPresent) {
+            return res.status(400).json({ message: "No orders found" });
+        }
+
+        let finalArray = [];
+        for (let order of orderPresent) {
+            let orderArray = [];
+            for (let proId of order.products) {
+                const product = await Product.findOne({ id: proId.product_id });
+                if (product) {
+                    orderArray.push(
+                        {
+                            title: product.title,
+                            description: product.description,
+                            image: product.image,
+                            price: product.price,
+                            quantity: order.quantity,
+                        }
+                    )
+                }
+            }
+            finalArray.push({
+                products: orderArray,
+                totAmount: order.totAmount,
+                orderDate: order.orderDate,
+                estDelivDate: order.estDelivDate,
+                order_id: order.order_id
+            })
+        }
+        return res.status(200).json(finalArray);
+    }  
+    catch (err) {
+        console.log(err);
+    }
+}
+module.exports = { placeOrder, viewOrder };
