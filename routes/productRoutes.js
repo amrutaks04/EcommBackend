@@ -4,7 +4,7 @@ const productController=require('../controllers/productController');
 
 const auth=require('../middlewares/auth');
 
-Router.get('/products',auth,productController.getAllProducts);
+Router.get('/products',productController.getAllProducts);
 Router.post('/addproduct',auth ,productController.addProduct);
 Router.delete('/deleteproduct/:id',productController.deleteproduct);
 Router.patch('/updateproduct/:id',productController.updateproduct);
