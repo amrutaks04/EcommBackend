@@ -65,8 +65,10 @@ const getCart = async (req, res) => {
               total+=subTotal;
             }
         }
-       let totalArray ={cartArray,total};
-        return res.status(200).json(totalArray);
+       let totalArray =[cartArray,total];
+        return res.status(200).json({
+            "totalArray":totalArray
+        });
     } catch (err) {
         console.log(err);
     }
